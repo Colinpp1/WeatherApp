@@ -1,18 +1,25 @@
 using System;
+using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 
 namespace WeatherApp
 {
     class Program
     {
-        // OpenWeatherMap API configuration
-        private const string API_KEY = "d750580a25f3b36c00c4df76b15a16ac";
-        private const string BASE_URL = "https://api.openweathermap.org/data/2.5/weather";
-
         static async Task Main(string[] args)
         {
+            // Load configuration from appsettings.json
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
+
+            string apiKey = configuration["WeatherApi:ApiKey"];
+            string baseUrl = configuration["WeatherApi:BaseUrl"];
+
             Console.WriteLine("=== Weather App ===\n");
 
             // Get city name from user
@@ -26,7 +33,7 @@ namespace WeatherApp
             }
 
             // Create weather service and fetch data
-            var weatherService = new WeatherService(API_KEY);
+            var weatherService = new WeatherService(apiKey, baseUrl);
 
             try
             {
@@ -65,10 +72,12 @@ namespace WeatherApp
     public class WeatherService
     {
         private readonly string _apiKey;
+        private readonly string _baseUrl;
 
-        public WeatherService(string apiKey)
+        public WeatherService(string apiKey, string baseUrl)
         {
             _apiKey = apiKey;
+            _baseUrl = baseUrl;
         }
 
         public async Task<WeatherData> GetWeatherAsync(string city)
@@ -77,7 +86,7 @@ namespace WeatherApp
             {
                 // Build API URL (URL encode the city name)
                 string encodedCity = Uri.EscapeDataString(city);
-                string url = $"{Program.BASE_URL}?q={encodedCity}&appid={_apiKey}&units=metric";
+                string url = $"{_baseUrl}?q={encodedCity}&appid={_apiKey}&units=metric";
 
                 // Make API request
                 HttpResponseMessage response = await client.GetAsync(url);
