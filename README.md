@@ -20,17 +20,16 @@ A C# console application that fetches and displays current weather information u
 
 ### 2. Add Your API Key
 
-Open `Program.cs` and replace `YOUR_API_KEY_HERE` on line 11:
+Open `Program.cs` and replace the weather api key with your own:
 
-```csharp
-private const string API_KEY = "your_actual_api_key_here";
-```
 
 ## How to Run
 
+git clone repo
+
 ### Command Line
 ```bash
-cd C:\Users\kenzo\CascadeProjects\WeatherApp
+cd location_project
 dotnet run
 ```
 
